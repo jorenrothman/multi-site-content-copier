@@ -24,8 +24,6 @@ $(document).ready(function() {
                 nonce: nonce,
             },
             beforeSend: function() {
-                console.log('hey');
-
                 $notifications.css({
                     display: 'none',
                     color: '#444',

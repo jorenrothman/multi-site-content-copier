@@ -37,6 +37,53 @@ function msccGetSelectOptions()
     return $data;
 }
 
+function msccCreatePostOnSubSite($postID, $siteID)
+{
+    $post = get_post($postID, ARRAY_A);
+
+    unset($post['ID']);
+    $post['post_status'] = 'draft';
+
+    switch_to_blog($siteID);
+
+    $destinationPostID = wp_insert_post($post);
+
+    restore_current_blog();
+
+    return $destinationPostID;
+}
+
+function msccCopyMetaData($postID, $siteID, $destinationPostID)
+{
+    $postMeta = msccGetPostMetaData($postID);
+
+    foreach ($postMeta as $meta) {
+        $key = $meta['meta_key'];
+
+        if ($key === '_edit_last' || $key === '_edit_lock') {
+            continue;
+        }
+
+        if (is_serialized($meta['meta_value'])) {
+            $meta['meta_value'] = maybe_unserialize($meta['meta_value']);
+        }
+
+        if (is_array($meta['meta_value'])) {
+            $length = sizeof($meta['meta_value']);
+
+            for ($i = 0; $i < $length; $i++) {
+                $meta['meta_value'][$i] = msccImageHelper($meta['meta_value'][$i], $siteID, $destinationPostID);
+            }
+        } else {
+            $meta['meta_value'] = msccImageHelper($meta['meta_value'], $siteID, $destinationPostID);
+        }
+
+        add_post_meta($destinationPostID, $key, $meta['meta_value'], true);
+    }
+
+    restore_current_blog();
+}
+
 function msccGetPostData($postID, $output = ARRAY_A)
 {
     global $wpdb;
@@ -135,4 +182,107 @@ function msccDoesFileExits($filename)
     $uploadDir = wp_upload_dir();
 
     return is_file($uploadDir['path'] . '/' . $filename);
+}
+
+function msccCopyTerms($postID, $destinationPostID, $destinationSiteID)
+{
+    restore_current_blog();
+
+    $taxonomies = msccGetPostTaxonomies($postID);
+    $terms = msccGetPostTermsByTaxonomies($postID, $taxonomies);
+
+    msccCreateCategoriesOtherSite($terms, $destinationPostID, $destinationSiteID);
+
+    msccSetPostTerms($terms, $destinationPostID, $destinationSiteID);
+}
+
+function msccGetPostTaxonomies($postID)
+{
+    $post = get_post($postID);
+
+    $taxonomies = get_object_taxonomies($post);
+
+    return $taxonomies;
+}
+
+function msccGetPostTermsByTaxonomies($postID, $taxonomies)
+{
+    if (!is_array($taxonomies) || empty($taxonomies)) {
+        return [];
+    }
+
+    $allTerms = [];
+
+    foreach ($taxonomies as $taxonomy) {
+        $terms = get_the_terms($postID, $taxonomy);
+
+        if (!$terms) {
+            continue;
+        }
+
+        $allTerms[$taxonomy] = $terms;
+    }
+
+    return $allTerms;
+}
+
+function msccCreateCategoriesOtherSite($termsToCompare, $postID, $siteID)
+{
+    switch_to_blog($siteID);
+
+    $taxonomies = msccGetPostTaxonomies($postID);
+    $terms = msccGetPostTermsByTaxonomies($postID, $taxonomies);
+
+    foreach ($termsToCompare as $taxonomyToCompare => $values) {
+        $valueSize = sizeof($values);
+
+        if (!array_key_exists($taxonomyToCompare, $terms)) {
+            for ($i = 0; $valueSize > $i; $i++) {
+                $value = $values[$i];
+
+                $termID = wp_insert_term($value->name, $taxonomyToCompare, [
+                    'description' => $value->description,
+                    'slug' => $value->slug,
+                ]);
+
+                if (is_wp_error($termID)) {
+                    $termObject = get_term_by('name', $value->name, $taxonomyToCompare);
+
+                    $termID = $termObject->term_id;
+                }
+
+                msccSetPostTerms($termID, $taxonomyToCompare, $postID);
+            }
+
+            continue;
+        }
+
+        $termTemp = $terms[$taxonomyToCompare];
+
+        $termSize = sizeof($termTemp);
+
+        for ($i = 0; $valueSize > $i; $i++) {
+            $value = $values[$i];
+
+            for ($j = 0; $termSize > $j; $j++) {
+                $term = $termTemp[$i];
+
+                if ($term->slug !== $value->slug) {
+                    $termID = wp_insert_term($value->name, $taxonomyToCompare, [
+                        'description' => $value->description,
+                        'slug' => $value->slug,
+                    ]);
+
+                    msccSetPostTerms($termID, $taxonomyToCompare, $postID);
+                }
+            }
+        }
+    }
+
+    restore_current_blog();
+}
+
+function msccSetPostTerms($termID, $taxonomy, $postID)
+{
+    wp_set_post_terms($postID, $termID, $taxonomy, true);
 }

@@ -14,8 +14,6 @@ function msccAddMetaBox($post)
 
 function msscBuildMetaBox()
 {
-    // our code here
-
     $options = msccGetSelectOptions();
     $nonce = wp_create_nonce('mscc_copy_post');
 
@@ -42,8 +40,6 @@ function msscBuildMetaBox()
 <?php
 }
 
-// add_action('save_post', 'msccMetaBoxCallback');
-
 function msccCreatePost()
 {
     $response = [
@@ -68,43 +64,11 @@ function msccCreatePost()
         wp_send_json_error($response);
     }
 
-    $post = get_post($postID, ARRAY_A);
+    $destinationPostID = msccCreatePostOnSubSite($postID, $siteID);
 
-    $postMeta = msccGetPostMetaData($postID);
+    msccCopyMetaData($postID, $siteID, $destinationPostID);
 
-    unset($post['ID']);
-    $post['post_status'] = 'draft';
-
-    switch_to_blog($siteID);
-
-    $destinationPostID = wp_insert_post($post);
-
-
-    foreach ($postMeta as $meta) {
-        $key = $meta['meta_key'];
-
-        if ($key === '_edit_last' || $key === '_edit_lock') {
-            continue;
-        }
-
-        if (is_serialized($meta['meta_value'])) {
-            $meta['meta_value'] = maybe_unserialize($meta['meta_value']);
-        }
-
-        if (is_array($meta['meta_value'])) {
-            $length = sizeof($meta['meta_value']);
-
-            for ($i = 0; $i < $length; $i++) {
-                $meta['meta_value'][$i] = msccImageHelper($meta['meta_value'][$i], $siteID, $destinationPostID);
-            }
-        } else {
-            $meta['meta_value'] = msccImageHelper($meta['meta_value'], $siteID, $destinationPostID);
-        }
-
-
-
-        add_post_meta($destinationPostID, $key, $meta['meta_value'], true);
-    }
+    msccCopyTerms($postID, $destinationPostID, $siteID);
 
     $info = get_blog_details([
         'blog_id' => $siteID
