@@ -286,3 +286,18 @@ function msccSetPostTerms($termID, $taxonomy, $postID)
 {
     wp_set_post_terms($postID, $termID, $taxonomy, true);
 }
+
+function msccSetFeaturedImage($postID, $destinationPost, $siteID)
+{
+    restore_current_blog();
+
+    $featuredImageID = get_post_thumbnail_id($postID);
+
+    if ($featuredImageID === '') {
+        return;
+    }
+
+    $newImageID = msccCopyImage($featuredImageID, $destinationPost, $siteID);
+
+    set_post_thumbnail($postID, $newImageID);
+}

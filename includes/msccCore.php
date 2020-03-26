@@ -70,6 +70,8 @@ function msccCreatePost()
 
     msccCopyTerms($postID, $destinationPostID, $siteID);
 
+    msccSetFeaturedImage($postID, $destinationPostID, $siteID);
+
     $info = get_blog_details([
         'blog_id' => $siteID
     ]);
