@@ -48,12 +48,10 @@
                     }
 
                     $notifications.text(response.data.message);
-                    console.log(response);
                 },
 
                 error: function(error) {
                     _this.text('Copy Page');
-                    console.log(error);
                 },
             });
         });
