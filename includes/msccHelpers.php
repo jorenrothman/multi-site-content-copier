@@ -42,6 +42,9 @@ function msccCreatePostOnSubSite($postID, $siteID)
     $post = get_post($postID, ARRAY_A);
 
     unset($post['ID']);
+    unset($post['post_date']);
+    unset($post['post_date_gmt']);
+
     $post['post_status'] = 'draft';
 
     switch_to_blog($siteID);
