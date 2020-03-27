@@ -3,7 +3,19 @@
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
+    "watch": {
+        "build": {
+            "patterns": [
+                "assets"
+            ],
+            "extensions": "js",
+            "ignore": "assets/multi-site-content-copier.min.js",
+            "quiet": true,
+            "runOnChangeOnly": true
+        }
+    },
     "scripts": {
+        "dev": "npm-watch build",
         "build": "uglifyjs ./assets/multi-site-content-copier.js --compress --mangle --output ./assets/multi-site-content-copier.min.js ",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
@@ -19,6 +31,8 @@
     },
     "homepage": "https://github.com/jorenrothman/multi-site-content-copier#readme",
     "dependencies": {
-        "uglify-js": "^3.8.0"
+        "npm-watch": "^0.6.0",
+        "uglify-js": "^3.8.0",
+        "watch": "^1.0.2"
     }
 }
