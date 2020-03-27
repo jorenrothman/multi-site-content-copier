@@ -1,0 +1,24 @@
+{
+    "name": "multi-content-copier",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "build": "uglifyjs ./assets/multi-site-content-copier.js --compress --mangle --output ./assets/multi-site-content-copier.min.js ",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jorenrothman/multi-site-content-copier.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/jorenrothman/multi-site-content-copier/issues"
+    },
+    "homepage": "https://github.com/jorenrothman/multi-site-content-copier#readme",
+    "dependencies": {
+        "uglify-js": "^3.8.0"
+    }
+}
