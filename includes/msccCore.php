@@ -7,9 +7,33 @@ function msccInitPlugin()
 
 add_action('admin_init', 'msccInitPlugin');
 
+function msccGetPostTypes()
+{
+    $postTypesToExclude = [
+        '_builtin' => false
+    ];
+
+    $allPostTypes = get_post_types($postTypesToExclude, 'names');
+
+    unset($allPostTypes['acf-field-group']);
+    unset($allPostTypes['acf-field']);
+
+    $output = [];
+
+    foreach ($allPostTypes as $postType) {
+        array_push($output, $postType);
+    }
+
+    array_push($output, 'post', 'page');
+
+    return $output;
+}
+
 function msccAddMetaBox($post)
 {
-    add_meta_box('mscc_meta_box', 'Multi Site Content Copier', 'msscBuildMetaBox', ['post', 'page'], 'side', 'low');
+    $postTypes = msccGetPostTypes();
+
+    add_meta_box('mscc_meta_box', 'Multi Site Content Copier', 'msscBuildMetaBox', $postTypes, 'side', 'low');
 }
 
 function msscBuildMetaBox()
