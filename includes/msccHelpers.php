@@ -30,7 +30,7 @@ function msccGetSelectOptions()
 
         array_push($data, [
             'id' => $site->blog_id,
-            'siteName' => $blogDetails->blogname
+            'siteName' => $blogDetails->blogname . ' (' . $blogDetails->path . ')'
         ]);
     }
 
