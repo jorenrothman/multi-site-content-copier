@@ -131,7 +131,9 @@ function msccCopyImage($imageID, $destinationPost, $destinationSite)
 
     $uploadDir = wp_upload_dir();
 
-    $sourceLocation = $uploadDir['path'] . '/' . $fileName;
+    $fileDateLocation = msccGetFileDate($image['guid']);
+
+    $sourceLocation = $uploadDir['basedir'] . '/' . $fileDateLocation . '/' . $fileName;
 
     switch_to_blog($destinationSite);
 
@@ -178,6 +180,17 @@ function msccCopyImage($imageID, $destinationPost, $destinationSite)
     }
 
     return $insertedImage;
+}
+
+function msccGetFileDate($file)
+{
+    $parts = explode('/', $file);
+
+    array_pop($parts);
+
+    $dateArray = array_slice($parts, -2);
+
+    return join('/', $dateArray);
 }
 
 function msccDoesFileExits($filename)
