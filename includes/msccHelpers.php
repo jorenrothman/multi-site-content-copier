@@ -2,7 +2,7 @@
 
 function msccLoadScripts()
 {
-    wp_register_script('mscc_js', WP_PLUGIN_URL . '/multi-site-content-copier/assets/multi-site-content-copier.min.js', ['jquery']);
+    wp_register_script('mscc_js', MSCC_URL . 'assets/multi-site-content-copier.min.js', ['jquery']);
     wp_localize_script('mscc_js', 'msccAjax', ['ajaxurl' => admin_url('admin-ajax.php')]);
 
     wp_enqueue_script('jquery');
