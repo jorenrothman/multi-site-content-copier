@@ -42,25 +42,21 @@ function msscBuildMetaBox()
     $nonce = wp_create_nonce('mscc_copy_post');
 
 ?>
-
-    <div class="inside">
-
-        <label for="mscc-location-selector">Select destination</label>
-        <p>
-            <input type="hidden" name="mscc-post-id" id="mscc-post-id" value="<?= get_the_id(); ?>">
-            <select id="mscc-location-selector" name="mscc-option" style="width: 100%">
-                <option value="0" selected>Select A Site</option>
-                <?php
-                foreach ($options as $option) : ?>
-                    <option value="<?= $option['id'] ?>"><?= $option['siteName'] ?></option>
-                <?php endforeach; ?>
-            </select>
-        </p>
-        <p class="notifications" id="mscc-notifications" style="display: none"></p>
-        <p>
-            <button data-nonce="<?= $nonce ?>" id="mscc-submit" type="button" class="button button-primary button-large">Copy Page</button>
-        </p>
-    </div>
+    <label for="mscc-location-selector">Select destination</label>
+    <p>
+        <input type="hidden" name="mscc-post-id" id="mscc-post-id" value="<?= get_the_id(); ?>">
+        <select id="mscc-location-selector" name="mscc-option" style="width: 100%">
+            <option value="0" selected>Select A Site</option>
+            <?php
+            foreach ($options as $option) : ?>
+                <option value="<?= $option['id'] ?>"><?= $option['siteName'] ?></option>
+            <?php endforeach; ?>
+        </select>
+    </p>
+    <p class="notifications" id="mscc-notifications" style="display: none"></p>
+    <p>
+        <button data-nonce="<?= $nonce ?>" id="mscc-submit" type="button" class="button button-primary button-large">Copy Page</button>
+    </p>
 <?php
 }
 
