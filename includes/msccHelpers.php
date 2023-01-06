@@ -142,21 +142,23 @@ function msccCopyImage($imageID, $destinationPost, $destinationSite)
     $uploadFile = true;
 
     if (msccDoesFileExits($fileName)) {
+        $x = pathinfo($fileName, PATHINFO_FILENAME);
+
         $images = get_posts([
-            'post_type' => 'attachment'
+            'post_type' => 'attachment',
+            'meta_query' => [
+                [
+                    'key' => '_wp_attached_file',
+                    'value' => $x,
+                    'compare' => 'LIKE'
+                ]
+            ]
         ]);
 
-        $destinationUploadDir = wp_upload_dir();
-
-        $foundImage = array_filter($images, function ($image) use ($destinationUploadDir, $fileName) {
-            $url = $destinationUploadDir['url'] . '/' . $fileName;
-            return $image->guid === $url;
-        });
-
-        if (is_array($foundImage) && !empty($foundImage)) {
+        if (is_array($images) && !empty($images)) {
             $uploadFile = false;
 
-            $foundImage = reset($foundImage);
+            $foundImage = reset($images);
 
             $insertedImage = $foundImage->ID;
         }
