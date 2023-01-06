@@ -16,7 +16,7 @@
  * Plugin Name:       Multi Site Content Copier
  * Plugin URI:        https://instance.studio
  * Description:       A Multi Site Content duplication plugin.
- * Version:           1.2.2
+ * Version:           1.2.3
  * Author:            Joren Rothman
  * Author URI:        https://instance.studio
  * License:           GPL-2.0+
