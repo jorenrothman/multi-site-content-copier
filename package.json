@@ -31,7 +31,7 @@
     },
     "homepage": "https://github.com/jorenrothman/multi-site-content-copier#readme",
     "dependencies": {
-        "npm-watch": "^0.6.0",
+        "npm-watch": "^0.11.0",
         "uglify-js": "^3.8.0",
         "watch": "^1.0.2"
     }
